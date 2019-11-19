@@ -2,6 +2,7 @@
 
 MQTT_UID=${MQTT_UID:=1000}
 MQTT_HOST=${MQTT_HOST:=localhost}
+RUN_AS=$(id -nu $MQTT_UID || awk -v val=$MQTT_UID -F ":" '$3==val{print $1}' /etc/passwd)
 
 function postDocker {
     # params: (container_name, action)
@@ -10,9 +11,9 @@ function postDocker {
     curl -XPOST --unix-socket /var/run/docker.sock "${URL}"
 }
 
-while read topic payload;
+su $RUN_AS -c "mosquitto_sub -h '${MQTT_HOST}' -t 'mqtt/+/cmd' -v" | while read -r topic payload
 do
-    container=$(cut -d"/" -f2 <<<"${topic}")
+    container=$(echo "${topic}" | cut -d"/" -f2)
     # TODO case might not be necessary
     case $(echo "${payload}" | tr a-z A-Z) in
         START)
@@ -40,4 +41,4 @@ do
             postDocker kill "${container}"
             ;;
     esac
-done < <(su $(id -nu $MQTT_UID) -c """ mosquitto_sub -h "${MQTT_HOST}" -t "mqtt/+/cmd" -v """)
+done
