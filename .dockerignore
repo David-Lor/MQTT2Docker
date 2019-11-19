@@ -1,0 +1,8 @@
+tools
+tests
+.github
+*.md
+.git*
+docker_build.sh
+*.yml
+*.env

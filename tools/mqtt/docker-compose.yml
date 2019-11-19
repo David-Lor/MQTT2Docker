@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto:latest
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      # TODO mosquitto data volume/s
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

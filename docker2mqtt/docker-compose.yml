@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  docker2mqtt:
+    container_name: docker2mqtt
+    image: davidlor/docker2mqtt
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - docker2mqtt.env
+    networks:
+      - mqtt
+
+networks:
+  mqtt:
+    external:
+      name: mqtt_default
